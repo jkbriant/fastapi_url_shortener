@@ -6,4 +6,10 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi[standard]>=0.128.0",
+    "jinja2>=3.1.6",
+]
+
+[dependency-groups]
+dev = [
+    "pylint>=4.0.4",
 ]
