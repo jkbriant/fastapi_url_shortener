@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -68,6 +68,14 @@ def get_long_url(short_url: str):
 
     long_url = url_mapping[short_url]
     return {"short_url": short_url, "long_url": long_url}
+
+@app.get("/r/{short_url}")
+def redirect_to_long_url(short_url: str, request: Request):
+    if short_url not in url_mapping:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Short URL not found")
+
+    long_url = url_mapping[short_url]
+    return RedirectResponse(long_url, status_code=status.HTTP_307_TEMPORARY_REDIRECT)
 
 ## TESTING ROUTES
 
