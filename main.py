@@ -6,6 +6,11 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from schemas import PostCreate, PostResponse
+from schemas import URLCreate, URLResponse
+
+import string
+import random
+
 
 app = FastAPI()
 
@@ -31,6 +36,40 @@ posts: list[dict] = [
 ]
 
 url_mapping: dict[str, str] = {}
+url_reverse_mapping: dict[str, str] = {}
+
+def get_unique_short_url(length: int = 6):
+    while True:
+        chars = string.ascii_letters + string.digits
+        short_url = "".join(random.choice(chars) for _ in range(length))
+        if short_url not in url_mapping:
+            return short_url
+
+## ROUTES
+
+@app.post(
+    "/api/shorten", 
+    response_model=URLResponse, 
+    status_code=status.HTTP_201_CREATED
+)
+def shorten_url(url: URLCreate):
+    if url.url in url_reverse_mapping:
+        return {"short_url": url_reverse_mapping[url.url], "long_url": url.url}
+
+    short_url = get_unique_short_url()
+    url_mapping[short_url] = url.url
+    url_reverse_mapping[url.url] = short_url
+    return {"short_url": short_url, "long_url": url.url}
+
+@app.get("/api/get_url/{short_url}", response_model=URLResponse)
+def get_long_url(short_url: str):
+    if short_url not in url_mapping:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Short URL not found")            
+
+    long_url = url_mapping[short_url]
+    return {"short_url": short_url, "long_url": long_url}
+
+## TESTING ROUTES
 
 @app.get("/", include_in_schema=False, name="home")
 @app.get("/posts", include_in_schema=False, name="posts") 
@@ -74,6 +113,8 @@ def get_post(post_id: int):
         if post.get("id") == post_id:
             return {"data": post}
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+
+## ERROR HANDLING
 
 @app.exception_handler(StarletteHTTPException)
 def general_http_exception_handler(request: Request, exception: StarletteHTTPException):
