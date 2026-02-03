@@ -77,6 +77,14 @@ def redirect_to_long_url(short_url: str, request: Request):
     long_url = url_mapping[short_url]
     return RedirectResponse(long_url, status_code=status.HTTP_307_TEMPORARY_REDIRECT)
 
+@app.get("/api/list_urls", response_model=list[URLResponse])
+def list_urls():
+    """List all shortened URLs and their corresponding long URLs"""
+    result = []
+    for short, original in url_mapping.items():
+        result.append({"short_url": short, "long_url": original})
+    return result
+
 ## TESTING ROUTES
 
 @app.get("/", include_in_schema=False, name="home")
