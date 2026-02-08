@@ -25,6 +25,11 @@ def get_unique_short_url(length: int = 6):
         if short_url not in url_mapping:
             return short_url
 
+for i in range(0, 100):
+    short_url = get_unique_short_url()
+    url_mapping[short_url] = "https://www.test.com"
+    url_reverse_mapping["https://www.test.com"] = short_url
+
 ## ROUTES
 
 @app.get("/")
@@ -34,7 +39,7 @@ def home(request: Request):
         for short_url, long_url in url_mapping.items()
     ]
     return templates.TemplateResponse(
-        request, "home.html", {"posts": posts}
+        request, "home.html", {"posts": posts[:10]}
     )
 
 @app.post(
@@ -43,7 +48,7 @@ def home(request: Request):
     status_code=status.HTTP_201_CREATED
 )
 def shorten_url(url: URLCreate):
-    # Normalize URL by adding https:// if no scheme is present
+    # Normalize URL by adding https:// if not present
     long_url = url.url
     if not long_url.startswith(("http://", "https://")):
         long_url = "https://" + long_url
