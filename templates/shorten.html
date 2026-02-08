@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2>Josh's URL Shortener</h2>
+    <form method="POST">
+        <label for="url">Enter URL to shorten:</label>
+        <input type="url" name="url" id="url" placeholder="https://example.com" required>
+        <button type="submit">Shorten</button>
+    </form>
+{% endblock content %}
