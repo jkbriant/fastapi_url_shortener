@@ -39,20 +39,6 @@ The application will be available at `http://localhost:8000`
 
 Visit `http://localhost:8000/docs` for detailed documentation.
 
-## Project Structure
-
-```
-fastapi_urlshort/
-├── main.py              # Main FastAPI application
-├── schemas.py           # Pydantic models
-├── pyproject.toml       # Project configuration
-├── templates/           # Jinja2 HTML templates
-│   ├── layout.html      # Base template
-│   ├── home.html        # Main page with URL list
-│   └── error.html       # Error page
-└── static/              # Static assets (CSS, JS, icons)
-```
-
 ## Todo
  - [ ] Change the storage of the addresses to use SQL
  - [ ] Cache frequently accessed web pages
