@@ -37,9 +37,12 @@ uv run fastapi dev main.py
 
 The application will be available at `http://localhost:8000`
 
+![alt text](image.png)
+
 Visit `http://localhost:8000/docs` for detailed documentation.
 
 ## Todo
  - [ ] Change the storage of the addresses to use SQL
  - [ ] Cache frequently accessed web pages
  - [ ] Track the number of times a page has been accessed and the display statistics
+
