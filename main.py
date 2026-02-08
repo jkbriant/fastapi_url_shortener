@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request, status
+from fastapi import FastAPI, HTTPException, Request, status, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -24,11 +24,11 @@ def get_unique_short_url(length: int = 6):
         short_url = "".join(random.choice(chars) for _ in range(length))
         if short_url not in url_mapping:
             return short_url
-
-for i in range(0, 100):
-    short_url = get_unique_short_url()
-    url_mapping[short_url] = "https://www.test.com"
-    url_reverse_mapping["https://www.test.com"] = short_url
+        
+short_url = get_unique_short_url()
+url_mapping[short_url] = "https://www.test.com"
+url_reverse_mapping["https://www.test.com"] = short_url
+    
 
 ## ROUTES
 
@@ -39,8 +39,23 @@ def home(request: Request):
         for short_url, long_url in url_mapping.items()
     ]
     return templates.TemplateResponse(
-        request, "home.html", {"posts": posts[:10]}
+        request, "home.html", {"posts": posts}
     )
+
+@app.post("/")
+def create_short_url(request: Request, url: str = Form(...)):
+    # Normalize URL by adding https:// if not present
+    long_url = url
+    if not long_url.startswith(("http://", "https://")):
+        long_url = "https://" + long_url
+    
+    if long_url in url_reverse_mapping:
+        return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+    short_url = get_unique_short_url()
+    url_mapping[short_url] = long_url
+    url_reverse_mapping[long_url] = short_url
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
 @app.post(
     "/api/shorten", 
