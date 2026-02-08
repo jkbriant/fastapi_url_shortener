@@ -3,17 +3,16 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-        <!-- site information -->
         <title>
             {% if title %}
-                FastAPI Blog - {{ title }}
+                URL Shortener - {{ title }}
             {% else %}
-                FastAPI Blog
+                URL Shortener
             {% endif %}
         </title>
+        <script src="https://cdn.tailwindcss.com"></script>
     </head>
-    <body>
+    <body class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         {% block content %}
         {% endblock content %}
     </body>

@@ -1,7 +1,15 @@
 {% extends "layout.html" %}
 {% block content %}
-    {% for post in posts %}
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.content }}</p>
-    {% endfor %}
+    <div class="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4">URL History</h1>
+        {% for post in posts %}
+            <div class="border-b py-3 last:border-b-0">
+                <h2 class="font-semibold text-gray-700">{{ post.title }}</h2>
+                <p class="text-gray-600 text-sm">{{ post.content }}</p>
+            </div>
+        {% else %}
+            <p class="text-gray-500">No URLs shortened yet.</p>
+        {% endfor %}
+        <a href="/" class="mt-4 inline-block text-blue-500 hover:text-blue-700 text-sm">Shorten a new URL</a>
+    </div>
 {% endblock content %}

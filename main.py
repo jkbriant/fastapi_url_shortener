@@ -27,6 +27,20 @@ def get_unique_short_url(length: int = 6):
 
 ## ROUTES
 
+@app.get("/")
+def home(request: Request):
+    posts = [
+        {"title": short_url, "content": long_url}
+        for short_url, long_url in url_mapping.items()
+    ]
+    return templates.TemplateResponse(
+        request, "home.html", {"posts": posts}
+    )
+
+@app.post("/")
+def post_home():
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
 @app.post(
     "/api/shorten", 
     response_model=URLResponse, 
