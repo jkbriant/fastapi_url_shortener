@@ -37,23 +37,24 @@ def home(request: Request):
         request, "home.html", {"posts": posts}
     )
 
-@app.post("/")
-def post_home():
-    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-
 @app.post(
     "/api/shorten", 
     response_model=URLResponse, 
     status_code=status.HTTP_201_CREATED
 )
 def shorten_url(url: URLCreate):
-    if url.url in url_reverse_mapping:
-        return {"short_url": url_reverse_mapping[url.url], "long_url": url.url}
+    # Normalize URL by adding https:// if no scheme is present
+    long_url = url.url
+    if not long_url.startswith(("http://", "https://")):
+        long_url = "https://" + long_url
+    
+    if long_url in url_reverse_mapping:
+        return {"short_url": url_reverse_mapping[long_url], "long_url": long_url}
 
     short_url = get_unique_short_url()
-    url_mapping[short_url] = url.url
-    url_reverse_mapping[url.url] = short_url
-    return {"short_url": short_url, "long_url": url.url}
+    url_mapping[short_url] = long_url
+    url_reverse_mapping[long_url] = short_url
+    return {"short_url": short_url, "long_url": long_url}
 
 @app.get("/api/get_url/{short_url}", response_model=URLResponse)
 def get_long_url(short_url: str):
