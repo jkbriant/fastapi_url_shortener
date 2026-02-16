@@ -1,11 +1,17 @@
 {% extends "layout.html" %}
 {% block content %}
-    <div class="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
-        <h1 class="text-4xl font-bold text-red-500 mb-2">{{ status_code }}</h1>
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Oops!</h2>
-        <p class="text-gray-600 mb-6">{{ message }}</p>
-        <a href="/" class="inline-block bg-blue-500 text-white font-medium py-2 px-4 rounded-md">
-            Go Home
+    <div class="p-6 w-full text-center">
+        <!-- Title -->
+        <div class="text-center py-6">
+            <h1 class="text-4xl font-bold">URL Shortener</h1>
+            <p>Joshua Briant</p>
+        </div>
+
+        <h1 class="text-4xl font-bold text-red-500">{{ status_code }}</h1>
+        <h2 class="text-xl font-semibold">Oops!</h2>
+        <p class="py-6">{{ message }}</p>
+        <a href="/" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md">
+            Home
         </a>
     </div>
 {% endblock content %}
