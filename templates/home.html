@@ -22,7 +22,7 @@
             <h2 class="text-xl font-bold">Recent URLs</h2>
             <div>
                 {% for post in posts %}
-                    <div class="flex items-center justify-between border px-3 my-3">
+                    <div class="flex items-center justify-between border px-3 my-3 hover:bg-gray-50">
                         <div class="flex-1 py-2">
                             <div>
                                 <a href="{{ post.content }}" class="font-semibold hover:text-blue-800 text-blue-500">{{ request.base_url }}r/{{ post.title }}</a>
