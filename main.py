@@ -29,8 +29,7 @@ short_url = get_unique_short_url()
 url_mapping[short_url] = "https://www.test.com"
 url_reverse_mapping["https://www.test.com"] = short_url
     
-
-## ROUTES
+## USER ROUTES
 
 @app.get("/")
 def home(request: Request):
@@ -44,7 +43,6 @@ def home(request: Request):
 
 @app.post("/")
 def create_short_url(request: Request, url: str = Form(...)):
-    # Normalize URL by adding https:// if not present
     long_url = url
     if not long_url.startswith(("http://", "https://")):
         long_url = "https://" + long_url
@@ -57,12 +55,22 @@ def create_short_url(request: Request, url: str = Form(...)):
     url_reverse_mapping[long_url] = short_url
     return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
+@app.get("/r/{short_url}")
+def redirect_from_short_url(short_url: str, request: Request):
+    if short_url not in url_mapping:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Short URL not found")
+
+    long_url = url_mapping[short_url]
+    return RedirectResponse(long_url, status_code=status.HTTP_307_TEMPORARY_REDIRECT)
+
+## API ROUTES
+
 @app.post(
     "/api/shorten", 
     response_model=URLResponse, 
     status_code=status.HTTP_201_CREATED
 )
-def shorten_url(url: URLCreate):
+def api_create_short_url(url: URLCreate):
     # Normalize URL by adding https:// if not present
     long_url = url.url
     if not long_url.startswith(("http://", "https://")):
@@ -77,23 +85,15 @@ def shorten_url(url: URLCreate):
     return {"short_url": short_url, "long_url": long_url}
 
 @app.get("/api/get_url/{short_url}", response_model=URLResponse)
-def get_long_url(short_url: str):
+def api_get_long_url(short_url: str):
     if short_url not in url_mapping:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Short URL not found")            
 
     long_url = url_mapping[short_url]
     return {"short_url": short_url, "long_url": long_url}
 
-@app.get("/r/{short_url}")
-def redirect_to_long_url(short_url: str, request: Request):
-    if short_url not in url_mapping:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Short URL not found")
-
-    long_url = url_mapping[short_url]
-    return RedirectResponse(long_url, status_code=status.HTTP_307_TEMPORARY_REDIRECT)
-
 @app.get("/api/list_urls", response_model=list[URLResponse])
-def list_urls():
+def api_list_urls():
     """List all shortened URLs and their corresponding long URLs"""
     result = []
     for short, original in url_mapping.items():
